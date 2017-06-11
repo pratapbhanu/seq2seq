@@ -49,10 +49,10 @@ class TestPrintModelAnalysisHook(tf.test.TestCase):
       file_contents = file.read().strip()
 
     if LooseVersion(tf.VERSION) < LooseVersion("1.2.0"):
-      self.assertEqual(file_contents.decode(), "_TFProfRoot (--/16.38k params)\n"
+      self.assertEqual(tf.compat.as_text(file_contents), "_TFProfRoot (--/16.38k params)\n"
                        "  weights (128x128, 16.38k/16.38k params)")
     else:
-      self.assertEqual(file_contents.decode(), "node name | # parameters\n"
+      self.assertEqual(tf.compat.as_text(file_contents), "node name | # parameters\n"
                        "_TFProfRoot (--/16.38k params)\n"
                        "  weights (128x128, 16.38k/16.38k params)")
 
