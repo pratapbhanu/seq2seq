@@ -24,7 +24,6 @@ import os
 import tempfile
 import shutil
 import time
-from distutils.version import LooseVersion
 
 import tensorflow as tf
 from tensorflow.python.training import monitored_session  # pylint: disable=E0611
@@ -48,13 +47,13 @@ class TestPrintModelAnalysisHook(tf.test.TestCase):
     with gfile.GFile(os.path.join(model_dir, "model_analysis.txt")) as file:
       file_contents = file.read().strip()
 
-    if LooseVersion(tf.VERSION) < LooseVersion("1.2.0"):
-      self.assertEqual(tf.compat.as_text(file_contents), "_TFProfRoot (--/16.38k params)\n"
-                       "  weights (128x128, 16.38k/16.38k params)")
-    else:
-      self.assertEqual(tf.compat.as_text(file_contents), "node name | # parameters\n"
-                       "_TFProfRoot (--/16.38k params)\n"
-                       "  weights (128x128, 16.38k/16.38k params)")
+    lines = tf.compat.as_text(file_contents).split("\n")
+    if len(lines) == 3:
+      # TensorFlow v1.2 includes an extra header line
+      self.assertEqual(lines[0], "node name | # parameters")
+
+    self.assertEqual(lines[-2], "_TFProfRoot (--/16.38k params)")
+    self.assertEqual(lines[-1], "  weights (128x128, 16.38k/16.38k params)")
 
     outfile.close()
 
