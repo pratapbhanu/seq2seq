@@ -39,7 +39,7 @@ class TestPrintModelAnalysisHook(tf.test.TestCase):
   def test_begin(self):
     model_dir = tempfile.mkdtemp()
     outfile = tempfile.NamedTemporaryFile()
-    tf.get_variable("weigths", [128, 128])
+    tf.get_variable("weights", [128, 128])
     hook = hooks.PrintModelAnalysisHook(
         params={}, model_dir=model_dir, run_config=tf.contrib.learn.RunConfig())
     hook.begin()
@@ -125,7 +125,7 @@ class TestMetadataCaptureHook(tf.test.TestCase):
   def test_capture(self):
     global_step = tf.contrib.framework.get_or_create_global_step()
     # Some test computation
-    some_weights = tf.get_variable("weigths", [2, 128])
+    some_weights = tf.get_variable("weights", [2, 128])
     computation = tf.nn.softmax(some_weights)
 
     hook = hooks.MetadataCaptureHook(
