@@ -28,7 +28,9 @@ import six
 
 import tensorflow as tf
 from tensorflow.contrib import metrics
+# pylint: disable=no-name-in-module
 from tensorflow.contrib.learn import MetricSpec
+# pylint: enable=no-name-in-module
 
 from seq2seq.data import postproc
 from seq2seq.configurable import Configurable

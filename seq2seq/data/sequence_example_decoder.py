@@ -14,7 +14,9 @@
 """A decoder for tf.SequenceExample"""
 
 import tensorflow as tf
+# pylint: disable=no-name-in-module
 from tensorflow.contrib.slim.python.slim.data import data_decoder
+# pylint: enable=no-name-in-module
 
 
 class TFSEquenceExampleDecoder(data_decoder.DataDecoder):

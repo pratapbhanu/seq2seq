@@ -21,7 +21,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import tensorflow as tf
+# pylint: disable=no-name-in-module
 from tensorflow.contrib.slim.python.slim.data import data_decoder
+# pylint: enable=no-name-in-module
 
 
 class SplitTokensDecoder(data_decoder.DataDecoder):

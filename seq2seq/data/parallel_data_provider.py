@@ -22,8 +22,10 @@ from __future__ import unicode_literals
 import numpy as np
 
 import tensorflow as tf
+# pylint: disable=no-name-in-module
 from tensorflow.contrib.slim.python.slim.data import data_provider
 from tensorflow.contrib.slim.python.slim.data import parallel_reader
+# pylint: enable=no-name-in-module
 
 from seq2seq.data import split_tokens_decoder
 

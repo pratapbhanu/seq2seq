@@ -20,8 +20,10 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+# pylint: disable=no-name-in-module
 from tensorflow.contrib.slim.python.slim.nets.inception_v3 \
   import inception_v3_base
+# pylint: enable=no-name-in-module
 
 from seq2seq.encoders.encoder import Encoder, EncoderOutput
 

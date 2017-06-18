@@ -21,7 +21,6 @@ from __future__ import print_function
 
 import copy
 import tensorflow as tf
-from tensorflow.contrib.rnn.python.ops import rnn
 
 from seq2seq.encoders.encoder import Encoder, EncoderOutput
 from seq2seq.training import utils as training_utils
@@ -186,7 +185,7 @@ class StackBidirectionalRNNEncoder(Encoder):
     cells_fw = _unpack_cell(cell_fw)
     cells_bw = _unpack_cell(cell_bw)
 
-    result = rnn.stack_bidirectional_dynamic_rnn(
+    result = tf.contrib.rnn.stack_bidirectional_dynamic_rnn(
         cells_fw=cells_fw,
         cells_bw=cells_bw,
         inputs=inputs,

@@ -29,7 +29,9 @@ import sys
 import six
 
 import tensorflow as tf
+# pylint: disable=no-name-in-module
 from tensorflow.contrib.slim.python.slim.data import tfexample_decoder
+# pylint: enable=no-name-in-module
 
 from seq2seq.configurable import Configurable
 from seq2seq.data import split_tokens_decoder, parallel_data_provider
