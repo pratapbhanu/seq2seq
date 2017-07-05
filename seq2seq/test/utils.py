@@ -105,7 +105,7 @@ def create_temporary_embeddings_file(words, dim=10):
   """
   embed_file = tempfile.NamedTemporaryFile()
   for token in words:
-    vec = " ".join(np.random.uniform(-0.25, 0.25, size=dim).tolist())
+    vec = " ".join([str(x) for x in np.random.uniform(-0.25, 0.25, size=dim).tolist()])
     embed_file.write((token+" "+vec + "\n").encode("utf-8"))
   embed_file.flush()
   return embed_file

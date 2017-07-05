@@ -235,9 +235,10 @@ class EmbeddingsFileTest(EncoderDecoderTests):
   """
 
   def setUp(self):
-    super(TestBasicSeq2Seq, self).setUp()
-    vocab_list = ["Hello", "there"]
-    self.embeddings_file = test_utils.create_temporary_embeddings_file(vocab_list, dim=10)
+    super(EmbeddingsFileTest, self).setUp()
+    self.emb_dim = 10
+    self.embeddings_file = test_utils.create_temporary_embeddings_file(self.vocab_list, 
+                                dim=self.emb_dim)
 
   def create_model(self, mode, params=None):
     params_ = BasicSeq2Seq.default_params().copy()
@@ -253,8 +254,9 @@ class EmbeddingsFileTest(EncoderDecoderTests):
     return BasicSeq2Seq(params=params_, mode=mode)
 
   def test_read_embeddings(self):
-    embeddings_mat = read_embeddings(self.embeddings_file.name)
-    assert embeddings_mat.shape[1] == 10
+    embeddings_mat = read_embeddings(self.embeddings_file.name, self.vocab_info.path)
+    assert embeddings_mat.shape[1] == self.emb_dim, "Embeddings Dimension  \
+           should be %d but found %d"%(self.emb_dim, embeddings_mat.shape[1]) 
 
 
 if __name__ == "__main__":
