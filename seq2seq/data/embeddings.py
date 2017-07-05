@@ -25,7 +25,7 @@ def read_embeddings(embeddings_path, vocab_path):
   """
   vocab_, _, _ = vocab.read_vocab(vocab_path)
   word2vec = {}
-  with open(embeddings_path, 'rt', encoding='utf-8') as vec_file:
+  with open(embeddings_path, 'r') as vec_file:
     for line in vec_file:
       parts = line.split(' ')
       word = parts[0]
