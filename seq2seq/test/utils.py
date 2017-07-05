@@ -90,23 +90,24 @@ def create_temporary_vocab_file(words, counts=None):
       vocab_file.write("{}\t{}\n".format(token, count).encode("utf-8"))
   vocab_file.flush()
   return vocab_file
-  
-def create_temporary_embeddings_file(words, dim=10):
+
+def create_temp_embedding_file(words, dim=10):
   """
   Creates a temporary Embeddings file.
-  
+
   Args:
-  words: List of words in the vocabulary
-  dim: embeddings dimension
-  
+    words: List of words in the vocabulary
+    dim: embeddings dimension
+
   Returns:
-    A temporary file object with one word and its vector(float values) per line, 
+    A temporary file object with one word and
+    its vector(float values) per line,
     each separated by a blank space.
   """
   embed_file = tempfile.NamedTemporaryFile()
   for token in words:
-    vec = " ".join([str(x) for x in np.random.uniform(-0.25, 0.25, size=dim).tolist()])
+    vec = " ".join([str(x) for x in
+                    np.random.uniform(-0.25, 0.25, size=dim).tolist()])
     embed_file.write((token+" "+vec + "\n").encode("utf-8"))
   embed_file.flush()
   return embed_file
-    

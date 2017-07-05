@@ -47,11 +47,11 @@ class Seq2SeqModel(ModelBase):
     self.target_vocab_info = None
     if "vocab_target" in self.params and self.params["vocab_target"]:
       self.target_vocab_info = vocab.get_vocab_info(self.params["vocab_target"])
-      
+
     self.embedding_mat = None
     if "embedding.file" in self.params and self.params["embedding.file"]:
-      embedding_mat = read_embeddings(self.params['embedding.file'],
-                                      self.source_vocab_info.path)
+      self.embedding_mat = read_embeddings(self.params['embedding.file'],
+                                           self.source_vocab_info.path)
 
   @staticmethod
   def default_params():
@@ -141,10 +141,12 @@ class Seq2SeqModel(ModelBase):
       initializer = tf.constant(self.embedding_mat, dtype=tf.float32)
       shape_ = None
     else:
-      initializer = tf.random_uniform_initializer(-self.params["embedding.init_scale"],
-                        self.params["embedding.init_scale"], dtype=tf.float32)
+      initializer = tf.random_uniform_initializer(
+          -self.params["embedding.init_scale"],
+          self.params["embedding.init_scale"],
+          dtype=tf.float32)
       shape_ = [self.source_vocab_info.total_size, self.params["embedding.dim"]]
-    
+
     return tf.get_variable(name="W", shape=shape_, initializer=initializer,
                            trainable=self.params['embedding.tune'])
 

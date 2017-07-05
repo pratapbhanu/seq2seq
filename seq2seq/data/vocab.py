@@ -67,14 +67,13 @@ def read_vocab(filename):
   Args:
     filename: Path to a vocabulary file containg one word per line.
     Each word is mapped to its line number.
-  
+
   Returns:
     A tuple (vocab, counts, special_vocab)
   """
-  tf.logging.info("Reading vocabulary from %s"%filename)
-  with gfile.GFile( # Load vocabulary into memory
-    filename) as file:
-      vocab = list(line.strip("\n") for line in file)
+  tf.logging.info("Reading vocabulary from %s", filename)
+  with gfile.GFile(filename) as file:
+    vocab = list(line.strip("\n") for line in file)
   vocab_size = len(vocab)
   has_counts = len(vocab[0].split("\t")) == 2
   if has_counts:
