@@ -136,7 +136,7 @@ class Seq2SeqModel(ModelBase):
   def source_embedding(self):
     """Returns the embedding used for the source sequence.
     """
-    if self.embedding_mat:
+    if self.embedding_mat is not None:
       self.params.update({"embedding.dim":self.embedding_mat.shape[1]})
       initializer = tf.constant(self.embedding_mat, dtype=tf.float32)
       shape_ = None
