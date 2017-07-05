@@ -30,6 +30,7 @@ from seq2seq.graph_utils import templatemethod
 from seq2seq.decoders.beam_search_decoder import BeamSearchDecoder
 from seq2seq.inference import beam_search
 from seq2seq.models.model_base import ModelBase, _flatten_dict
+from seq2seq.data.embeddings import read_embeddings
 
 
 class Seq2SeqModel(ModelBase):
@@ -46,6 +47,11 @@ class Seq2SeqModel(ModelBase):
     self.target_vocab_info = None
     if "vocab_target" in self.params and self.params["vocab_target"]:
       self.target_vocab_info = vocab.get_vocab_info(self.params["vocab_target"])
+      
+    self.embedding_mat = None
+    if "embedding.file" in self.params and self.params["embedding.file"]:
+      embedding_mat = read_embeddings(self.params['embedding.file'],
+                                      self.source_vocab_info.path)
 
   @staticmethod
   def default_params():
@@ -57,6 +63,8 @@ class Seq2SeqModel(ModelBase):
         "embedding.dim": 100,
         "embedding.init_scale": 0.04,
         "embedding.share": False,
+        "embedding.file": None,
+        "embedding.tune": True,
         "inference.beam_search.beam_width": 0,
         "inference.beam_search.length_penalty_weight": 0.0,
         "inference.beam_search.choose_successors_fn": "choose_top_k",
@@ -128,12 +136,17 @@ class Seq2SeqModel(ModelBase):
   def source_embedding(self):
     """Returns the embedding used for the source sequence.
     """
-    return tf.get_variable(
-        name="W",
-        shape=[self.source_vocab_info.total_size, self.params["embedding.dim"]],
-        initializer=tf.random_uniform_initializer(
-            -self.params["embedding.init_scale"],
-            self.params["embedding.init_scale"]))
+    if self.embedding_mat:
+      self.params.update({"embedding.dim":self.embedding_mat.shape[1]})
+      initializer = tf.constant(self.embedding_mat, dtype=tf.float32)
+      shape_ = None
+    else:
+      initializer = tf.random_uniform_initializer(-self.params["embedding.init_scale"],
+                        self.params["embedding.init_scale"], dtype=tf.float32)
+      shape_ = [self.source_vocab_info.total_size, self.params["embedding.dim"]]
+    
+    return tf.get_variable(name="W", shape=shape_, initializer=initializer,
+                           trainable=self.params['embedding.tune'])
 
   @property
   @templatemethod("target_embedding")

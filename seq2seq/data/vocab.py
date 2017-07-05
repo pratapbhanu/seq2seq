@@ -60,6 +60,36 @@ def get_special_vocab(vocabulary_size):
   return SpecialVocab(*range(vocabulary_size, vocabulary_size + 3))
 
 
+
+def read_vocab(filename):
+  """Reads vocab file into the memory and adds special-vocab to it.
+
+  Args:
+    filename: Path to a vocabulary file containg one word per line.
+    Each word is mapped to its line number.
+  
+  Returns:
+    A tuple (vocab, counts, special_vocab)
+  """
+  tf.logging.info("Reading vocabulary from %s"%filename)
+  with gfile.GFile( # Load vocabulary into memory
+    filename) as file:
+      vocab = list(line.strip("\n") for line in file)
+  vocab_size = len(vocab)
+  has_counts = len(vocab[0].split("\t")) == 2
+  if has_counts:
+    vocab, counts = zip(*[_.split("\t") for _ in vocab])
+    counts = [float(_) for _ in counts]
+    vocab = list(vocab)
+  else:
+    counts = [-1. for _ in vocab]
+  # Add special vocabulary items
+  special_vocab = get_special_vocab(vocab_size)
+  vocab += list(special_vocab._fields)
+  counts += [-1. for _ in list(special_vocab._fields)]
+
+  return vocab, counts, special_vocab
+
 def create_vocabulary_lookup_table(filename, default_value=None):
   """Creates a lookup table for a vocabulary file.
 
@@ -77,27 +107,10 @@ def create_vocabulary_lookup_table(filename, default_value=None):
   if not gfile.Exists(filename):
     raise ValueError("File does not exist: {}".format(filename))
 
-  # Load vocabulary into memory
-  with gfile.GFile(filename) as file:
-    vocab = list(line.strip("\n") for line in file)
-  vocab_size = len(vocab)
-
-  has_counts = len(vocab[0].split("\t")) == 2
-  if has_counts:
-    vocab, counts = zip(*[_.split("\t") for _ in vocab])
-    counts = [float(_) for _ in counts]
-    vocab = list(vocab)
-  else:
-    counts = [-1. for _ in vocab]
-
-  # Add special vocabulary items
-  special_vocab = get_special_vocab(vocab_size)
-  vocab += list(special_vocab._fields)
-  vocab_size += len(special_vocab)
-  counts += [-1. for _ in list(special_vocab._fields)]
-
+  vocab, counts, special_vocab = read_vocab(filename)
   if default_value is None:
     default_value = special_vocab.UNK
+  vocab_size = len(vocab)
 
   tf.logging.info("Creating vocabulary lookup table of size %d", vocab_size)
 

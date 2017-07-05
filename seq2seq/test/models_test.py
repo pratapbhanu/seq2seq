@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Tests for Models
 """
 
@@ -27,6 +28,7 @@ import numpy as np
 import tensorflow as tf
 
 from seq2seq.data import vocab, input_pipeline
+from seq2seq.data.embeddings import read_embeddings
 from seq2seq.training import utils as training_utils
 from seq2seq.test import utils as test_utils
 from seq2seq.models import BasicSeq2Seq, AttentionSeq2Seq
@@ -226,6 +228,33 @@ class TestAttentionSeq2Seq(EncoderDecoderTests):
     })
     params_.update(params or {})
     return AttentionSeq2Seq(params=params_, mode=mode)
+
+class EmbeddingsFileTest(EncoderDecoderTests):
+  """
+  Tests for using pre-trained embeddings as source embeddings.
+  """
+
+  def setUp(self):
+    super(TestBasicSeq2Seq, self).setUp()
+    vocab_list = ["Hello", "there"]
+    self.embeddings_file = test_utils.create_temporary_embeddings_file(vocab_list, dim=10)
+
+  def create_model(self, mode, params=None):
+    params_ = BasicSeq2Seq.default_params().copy()
+    params_.update(TEST_PARAMS)
+    params_.update({
+        "vocab_source": self.vocab_file.name,
+        "vocab_target": self.vocab_file.name,
+        "bridge.class": "PassThroughBridge",
+        "embedding.file": self.embeddings_file.name,
+        "embedding.tune": False
+    })
+    params_.update(params or {})
+    return BasicSeq2Seq(params=params_, mode=mode)
+
+  def test_read_embeddings(self):
+    embeddings_mat = read_embeddings(self.embeddings_file.name)
+    assert embeddings_mat.shape[1] == 10
 
 
 if __name__ == "__main__":
